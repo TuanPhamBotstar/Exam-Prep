@@ -64,7 +64,7 @@ module.exports.login = (req, res) => {
 
 module.exports.getUsers = (req, res) => {
     User.find({}, (err, users) => {
-        if (err) throw err;
+        // if (err) throw err;
         res.status(200).send(users);
     });
 };

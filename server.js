@@ -19,8 +19,10 @@ app.use(
 
 const cors = require("cors");
 
+const subjectRoutes = require("./app/routes/subject.route");
 const userRoutes = require("./app/routes/user.route");
-
+const questionRoutes = require("./app/routes/question.route");
+const testRoutes = require("./app/routes/test.route");
 mongoose.connect(url, {useNewUrlParser:true,useUnifiedTopology:true});
 
 mongoose.connection
@@ -30,11 +32,15 @@ mongoose.connection
     })
 app.use(cors());
 
+app.use("/api/admin/subjects", subjectRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/admin/questions", questionRoutes);
+app.use("/api/admin/tests", testRoutes);
 
 app.get("/", (req,res) => { 
     res.send("Welcome to PTExamPrep")
 });
+app.get('/api/subjects', subjectRoutes)
 
 app.listen(port, () => {
     console.log(`App listening at http://localhost:${port}`);
