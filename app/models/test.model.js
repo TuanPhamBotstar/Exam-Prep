@@ -4,7 +4,7 @@ let Schema = mongoose.Schema;
 let TestSchema = new Schema({
     subject_id:String,
     link:String,
-    testCode:Number,
+    testCode:String,
     testTitle:String,
     timeTest: String,
     hardQty: Number,

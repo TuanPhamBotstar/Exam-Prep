@@ -17,6 +17,7 @@ module.exports.postQuestion = (req,res) => {
 
 module.exports.getQuestions = (req, res) => {
     const id = req.params.subject_id;
+    console.log('get questions for subject')
     Question.find({subject_id:id},(err, questions)  => {
         if(err) console.log(err);
         res.status(200).send(questions);

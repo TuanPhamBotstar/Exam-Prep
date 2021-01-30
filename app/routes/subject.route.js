@@ -4,7 +4,7 @@ const Router = express.Router();
 const subjectController = require('../controller/subject.controller');
 
 Router.post('/', subjectController.postSubject);
-Router.get('/', subjectController.getSubjects);
-Router.get('/:subjectname', subjectController.getSubjectByName);
+Router.get('/author/:id', subjectController.getSubjects);
+Router.get('/:id', subjectController.getSubjectName);
 Router.delete('/delete/:id', subjectController.delSubject);
 module.exports = Router;
