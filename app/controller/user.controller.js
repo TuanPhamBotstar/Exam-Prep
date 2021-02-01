@@ -26,7 +26,7 @@ module.exports.login = (req, res) => {
                 const verified = bcrypt.compareSync(passwordLogin, user.password);
                 console.log('verified', verified)
                 if (verified) {
-                    return res.json({ success: true, message: 'passwords is match', id: user._id });
+                    return res.json({ success: true, message: 'passwords is match', id: user._id, username: user.username });
                 }
                 else {
                     return res.json({ success: false, message: 'passwords do not match' });
@@ -48,7 +48,7 @@ module.exports.login = (req, res) => {
                 const verified = bcrypt.compareSync(passwordLogin, user.password);
                 console.log('verified', verified)
                 if (verified) {
-                    return res.json({ success: true, message: 'passwords is match', id: user._id });
+                    return res.json({ success: true, message: 'passwords is match', id: user._id, username: user.username });
                 }
                 else {
                     return res.json({ success: false, message: 'passwords do not match' });

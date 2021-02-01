@@ -26,6 +26,7 @@ module.exports.getQuestions = (req, res) => {
 
 function getQs(qty, qsArr){
     const total = qsArr.length;
+    if(qty > total) return -1;
     let idxArr = [];
     let res = [];
     let l = 0;
@@ -66,8 +67,14 @@ module.exports.getQuestionsForTest = (req, res) => {
         const res1 = getQs(easyQty, easyQs);
         const res2 = getQs(normalQty, normalQs);
         const res3 = getQs(hardQty, hardQs);
-        const qsForTest = res1.concat(res2,res3);
-        res.status(200).send({test_id: test_id, questions: qsForTest});
+        if(res1 === -1 || res2 === -1 || res3 === -1){
+            res.status(200)
+            .send({susscess: false, easyTotal: easyQs.length, normalTotal: normalQs.length, hardTotal: hardQs.length});
+        }
+        else{
+            const qsForTest = res1.concat(res2,res3);
+            res.status(200).send({susscess: true, questions: qsForTest});
+        }
     })
     
 }

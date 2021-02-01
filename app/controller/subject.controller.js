@@ -17,7 +17,10 @@ module.exports.getSubjectName = (req, res) => {
     Subject.findOne({ _id: findSubjectname }, (err, subject) => {
         if (err) console.log(err);
         if(subject){
-            res.status(200).json(subject.subjectname);
+            res.status(200).json({subjectname: subject.subjectname, author: subject.author});
+        }
+        else{
+            res.status(200).json(null)
         }
     })
 }

@@ -11,6 +11,7 @@ let TestSchema = new Schema({
     normalQty: Number,
     easyQty: Number,
     questions:Array,
+    typeCode: Boolean,
 });
 
 module.exports = mongoose.model('Test', TestSchema);

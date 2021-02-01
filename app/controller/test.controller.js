@@ -14,20 +14,28 @@ module.exports.postTest = (req, res) => {
         hardQty: req.body.hardQty,
         normalQty: req.body.normalQty,
         easyQty: req.body.easyQty,
+        questions: req.body.questions,
     });
     newTest.save();
     console.log('new test', newTest)
-    res.status(201).send(newTest);
+    res.status(201).send(newTest._id);
 }
 
-module.exports.putQuestions = (req, res) => {
+// module.exports.putQuestions = (req, res) => {
+//     const id = req.body.test_id;
+//     const qsForTest = req.body.questions;
+//     const test = Test.where({_id:id});
+//     test.updateOne({$set: {questions: qsForTest}}).exec();
+//     res.status(200).send({message:'Get questions for test successfully'});
+// }
+
+module.exports.putTypecode = (req, res) => {
     const id = req.body.test_id;
-    const qsForTest = req.body.questions;
+    const typeCode = req.body.haveCode;
     const test = Test.where({_id:id});
-    test.updateOne({$set: {questions: qsForTest}}).exec();
-    res.status(200).send({message:'Get questions for test successfully'});
+    test.updateOne({$set: {typeCode: typeCode}}).exec();
+    res.status(200).send({success:true});
 }
-
 module.exports.getTest = (req, res) => {
     const id = req.params.id;
     console.log('get test by id', req.params)
@@ -47,7 +55,7 @@ module.exports.getTesting = (req, res) => {
         if(test){
             test.questions.forEach(question => {
                 question.answers.forEach(answer => {
-                    answer.isCorrect = false
+                    answer.isCorrect = null
                 })
             });
             res.status(200).send(test);
