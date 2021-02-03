@@ -1,6 +1,6 @@
 const { json } = require("body-parser");
 const Question = require("../models/question.model");
-
+const paginate = require('mongoose-paginate')
 module.exports.postQuestion = (req,res) => {
     console.log('req.body',req.body);
     let newQuestion = new Question({
@@ -16,14 +16,43 @@ module.exports.postQuestion = (req,res) => {
 }
 
 module.exports.getQuestions = (req, res) => {
+    console.log('pagi', req.params)
     const id = req.params.subject_id;
+    const page = req.params.page;
+    const perPage = 10;
     console.log('get questions for subject')
     Question.find({subject_id:id},(err, questions)  => {
         if(err) console.log(err);
-        res.status(200).send(questions);
+        const total = questions.length
+        let limit = page*perPage
+        let start = perPage*(page - 1)
+        const qsOnePage=[];
+        for(let i=start;i<limit;i++){
+            if(i<total){
+                qsOnePage.push(questions[i])
+            }
+            else{
+                break;
+            }
+        }
+        res.status(200).send({qsOnePage: qsOnePage, total: total});
     })
 }
-
+// module.exports.getQuestions = (req, res) => {
+//     var perPage = 10, page = Math.max(0, 1)
+//     Question.find({subject_id:'6015113bebbc213668917667'})
+//     .select('subject_id')
+//     .limit(perPage)
+//     .skip(perPage * page)
+//     // .sort({
+//     //     subject_id: 'asc'
+//     // })
+//     .exec(function(err, events) {
+//         Question.countDocuments().exec(function(err, count) {
+//             console.log(count)
+//         })
+//     })
+// }
 function getQs(qty, qsArr){
     const total = qsArr.length;
     if(qty > total) return -1;
