@@ -18,7 +18,7 @@ module.exports.postTest = (req, res) => {
     });
     newTest.save();
     console.log('new test', newTest)
-    res.status(201).send(newTest._id);
+    res.status(201).send({newTest: newTest, newTest_id: newTest._id});
 }
 
 // module.exports.putQuestions = (req, res) => {
@@ -36,20 +36,24 @@ module.exports.putTypecode = (req, res) => {
     test.updateOne({$set: {typeCode: typeCode}}).exec();
     res.status(200).send({success:true});
 }
-module.exports.getTest = (req, res) => {
-    const id = req.params.id;
-    console.log('get test by id', req.params)
-    Test.findOne({_id: id}, (err, test) => {
+module.exports.getDetailTest = (req, res) => {
+    const subject_id = req.params.subject_id;
+    const test_id = req.params.test_id;
+    console.log('get test by test_id', req.params)
+    Test.findOne({_id: test_id, subject_id: subject_id}, (err, test) => {
         if (err) console.log(err);
         if(test){
             res.status(200).send(test);
+        }
+        else{
+            res.status(200).json(null);
         }
     })
 }
 //hide answer'isCorrect
 module.exports.getTesting = (req, res) => {
     const id = req.params.id;
-    console.log('get test by id', req.params)
+    console.log('get test by id and hide answer', req.params)
     Test.findOne({_id: id}, (err, test) => {
         if (err) console.log(err);
         if(test){
@@ -81,7 +85,8 @@ module.exports.delTest = (req, res) => {
             if(err) console.log(err);
             console.log(result);
         })
-    res.status(204).json({message:'test is deleted successfully'});
+    console.log('deleted')
+    res.status(200).json(id);
 }
 
 // check result
