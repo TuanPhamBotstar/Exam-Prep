@@ -16,7 +16,7 @@ module.exports.postQuestion = (req,res) => {
 }
 
 module.exports.getQuestions = (req, res) => {
-    console.log('pagi', req.params)
+    console.log('pagination', req.params)
     const id = req.params.subject_id;
     const page = req.params.page;
     const perPage = 10;

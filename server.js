@@ -23,6 +23,7 @@ const subjectRoutes = require("./app/routes/subject.route");
 const userRoutes = require("./app/routes/user.route");
 const questionRoutes = require("./app/routes/question.route");
 const testRoutes = require("./app/routes/test.route");
+const resultRoutes = require("./app/routes/result.route");
 mongoose.connect(url, {useNewUrlParser:true,useUnifiedTopology:true});
 
 mongoose.connection
@@ -36,6 +37,7 @@ app.use("/api/admin/subjects", subjectRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/admin/questions", questionRoutes);
 app.use("/api/admin/tests", testRoutes);
+app.use("/api/admin/results", resultRoutes)
 
 app.get("/", (req,res) => { 
     res.send("Welcome to PTExamPrep")

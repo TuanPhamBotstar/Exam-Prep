@@ -88,8 +88,10 @@ module.exports.postUser = (req, res) => {
         password: hashpassword,
         fullname: req.body.fullname,
         email: req.body.email.toString().toLowerCase(),
+        tested: req.body.tested,
     });
     newUser.save();
     console.log(json('newUser', newUser));
     res.status(201).json({ success: true, message: 'Account is created' });
 };
+

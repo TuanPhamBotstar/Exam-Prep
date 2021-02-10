@@ -5,7 +5,7 @@ module.exports.getSubjects = (req, res) => {
     console.log('user_id', req.params)
     const user_id = req.params.id;
     const page = req.params.page;
-    const perPage = 10;
+    const perPage = 9;
     Subject.find({ author: user_id }, (err, subjects) => {
         if (err) throw err;
         const total = subjects.length
@@ -56,12 +56,12 @@ module.exports.postSubject = (req, res) => {
 
 module.exports.delSubject = (req, res) => {
     const id = req.params.id;
-    console.log('req.params id', req.params)
+    console.log('remove subject id', req.params)
     Subject.find({ _id: id })
         .deleteOne()
         .exec((err, result) => {
             if (err) console.log(err);
             console.log(result);
         })
-    res.status(204).send({ success: id });
+    res.status(200).json(id);
 }
