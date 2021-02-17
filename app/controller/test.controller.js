@@ -15,6 +15,7 @@ module.exports.postTest = (req, res) => {
         normalQty: req.body.normalQty,
         easyQty: req.body.easyQty,
         questions: req.body.questions,
+        author: req.body.author,
     });
     newTest.save();
     console.log('new test', newTest)
@@ -63,7 +64,7 @@ module.exports.getTesting = (req, res) => {
                 })
             });
             res.status(200).send(test);
-        }
+        }   
     })
 }
 

@@ -12,6 +12,7 @@ let TestSchema = new Schema({
     easyQty: Number,
     questions:Array,
     typeCode: Boolean,
+    author: String,
 });
 
 module.exports = mongoose.model('Test', TestSchema);

@@ -7,6 +7,7 @@ module.exports.saveResult = (req, res) => {
     const newResult = new Result({
         user_id: result.user_id,
         test_id: result.test_id,
+        author: result.author,
         nameTest: result.nameTest,
         point: result.point,
         time: result.time,

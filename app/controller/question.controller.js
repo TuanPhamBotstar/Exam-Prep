@@ -38,21 +38,30 @@ module.exports.getQuestions = (req, res) => {
         res.status(200).send({qsOnePage: qsOnePage, total: total});
     })
 }
-// module.exports.getQuestions = (req, res) => {
-//     var perPage = 10, page = Math.max(0, 1)
-//     Question.find({subject_id:'6015113bebbc213668917667'})
-//     .select('subject_id')
-//     .limit(perPage)
-//     .skip(perPage * page)
-//     // .sort({
-//     //     subject_id: 'asc'
-//     // })
-//     .exec(function(err, events) {
-//         Question.countDocuments().exec(function(err, count) {
-//             console.log(count)
-//         })
-//     })
-// }
+
+module.exports.getQtyqs = (req, res) => {
+    console.log('get qty questions', req.params)
+    const subject_id = req.params.subject_id;
+    let hardQty = 0;  
+    let normalQty = 0;
+    let easyQty = 0;  
+    Question.find({subject_id: subject_id}, (err, questions) => {
+        // if(err) console.log(err)
+        questions.forEach(question => {
+            if(question.level == 1){
+                easyQty ++;
+            }
+            else if(question.level == 2){
+                normalQty ++;
+            }
+            else{
+                hardQty ++;
+            }
+        });
+        res.status(200).json({easyQty: easyQty, normalQty: normalQty, hardQty: hardQty});
+    })
+}
+
 function getQs(qty, qsArr){
     const total = qsArr.length;
     if(qty > total) return -1;
