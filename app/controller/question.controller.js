@@ -14,7 +14,14 @@ module.exports.postQuestion = (req,res) => {
     console.log('newQuestion',newQuestion)
     res.status(201).json(newQuestion);
 }
-
+module.exports.getQuestion = (req, res) => {
+    const id = req.params.id;
+    console.log('get question by qs_id', req.params)
+    Question.find({_id: id}, (err, question) => {
+        if(err) console.log(err)
+        res.status(200).send(question);
+    })
+}
 module.exports.getQuestions = (req, res) => {
     console.log('pagination', req.params)
     const id = req.params.subject_id;
@@ -44,7 +51,7 @@ module.exports.getQtyqs = (req, res) => {
     const subject_id = req.params.subject_id;
     let hardQty = 0;  
     let normalQty = 0;
-    let easyQty = 0;  
+    let easyQty = 0; 
     Question.find({subject_id: subject_id}, (err, questions) => {
         // if(err) console.log(err)
         questions.forEach(question => {
@@ -116,7 +123,18 @@ module.exports.getQuestionsForTest = (req, res) => {
     })
     
 }
-
+module.exports.editQuestion = (req, res) => {
+    console.log('edit question', req.body)
+    const id = req.params.id;
+    const question = Question.where({_id: id});
+    if(question.title != req.body.title){
+        question.updateOne({$set: {title: req.body.title}}).exec();
+    }
+    if(question.level != req.body.level){
+        question.updateOne({$set: {level: req.body.level}}).exec();
+    }
+    question.updateOne({$set: {answers: req.body.answers}}).exec();
+}
 module.exports.delQuestion = (req, res) =>{
     const id = req.params.id;
     console.log('id del',id)
@@ -128,6 +146,7 @@ module.exports.delQuestion = (req, res) =>{
     })
     res.status(204).send(id);
 }
+
 
 
 

@@ -1,10 +1,10 @@
 const Result = require('../models/result.model')
 
-
 module.exports.saveResult = (req, res) => {
     const result = req.body
     console.log('save tested',req.body)
     const newResult = new Result({
+        user_name: result.user_name,
         user_id: result.user_id,
         test_id: result.test_id,
         author: result.author,
@@ -22,6 +22,15 @@ module.exports.getResult = (req, res) => {
     const user_id = req.params.id;
     console.log('get result')
     Result.find({user_id: user_id}, (err, results) => {
+        if(err) console.log(err)
+        res.status(200).json(results);
+    })
+}
+
+module.exports.getResByAuthor = (req, res) => {
+    const author = req.params.author;
+    console.log('get res by author', req.params)
+    Result.find({author: author}, (err, results) => {
         if(err) console.log(err)
         res.status(200).json(results);
     })

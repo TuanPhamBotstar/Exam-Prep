@@ -113,8 +113,8 @@ module.exports.checkAnswers = (req, res) => {
                     count++;
                 }
             })
-            const point = count*10;
-            res.status(200).json({correctAnswer: correctAnswer, point: point})
+            const point = (count*(100/correctAnswer.length)).toFixed(2);
+            res.status(200).json({correctAnswer: correctAnswer, point: point, count: count})
         }
     })
 }
