@@ -1,11 +1,14 @@
 const { json } = require("body-parser");
 const Subject = require("../models/subject.model");
-
+const Test = require("../models/test.model")
+const Question = require("../models/question.model")
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 module.exports.getSubjects = (req, res) => {
     console.log('user_id', req.params)
     const user_id = req.params.id;
     const page = req.params.page;
-    const perPage = 9;
+    const perPage = 14;
     Subject.find({ author: user_id }, (err, subjects) => {
         if (err) throw err;
         const total = subjects.length

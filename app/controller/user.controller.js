@@ -82,16 +82,37 @@ module.exports.getUsername = (req, res) => {
 
 module.exports.postUser = (req, res) => {
     console.log(req.body);
-    const hashpassword = bcrypt.hashSync(req.body.password, 10);
-    const newUser = new User({
-        username: req.body.username.toString().toLowerCase(),
-        password: hashpassword,
-        fullname: req.body.fullname,
-        email: req.body.email.toString().toLowerCase(),
-        tested: req.body.tested,
-    });
-    newUser.save();
-    console.log(json('newUser', newUser));
-    res.status(201).json({ success: true, message: 'Account is created' });
+    const username = req.body.username.toString().toLowerCase();
+    const email = req.body.email.toString().toLowerCase();
+    User.findOne({username: username}, (err, user) => {
+        console.log('... tim kiem 1')
+        if(err) console.log(err)
+        if(user){
+            console.log('uername is exist')
+            res.status(200).json({ success: false, message: 'Username already exist' })
+        }
+        else{
+            User.findOne({email: email}, (err, user) => {
+                console.log('... tim kiem 2')
+                if(err) console.log(err)
+                if(user){
+                    console.log('email is exist')
+                    res.status(200).json({ success: false, message: 'Username already exist' })
+                }
+                else{
+                    const hashpassword = bcrypt.hashSync(req.body.password, 10);
+                    const newUser = new User({
+                        username: username,
+                        password: hashpassword,
+                        fullname: req.body.fullname,
+                        email: email,
+                    });
+                    newUser.save();
+                    console.log(json('newUser', newUser));
+                    res.status(201).json({ success: true, message: 'Account is created' });
+                }
+            })
+        }
+    })
 };
 

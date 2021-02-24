@@ -137,14 +137,14 @@ module.exports.editQuestion = (req, res) => {
 }
 module.exports.delQuestion = (req, res) =>{
     const id = req.params.id;
-    console.log('id del',id)
+    console.log('delete question by id',id)
     Question.findOne({_id: id})
     .deleteOne()
     .exec((err, result) =>{
         if(err) console.log(err);
         console.log(result);
     })
-    res.status(204).send(id);
+    res.status(200).send({success: true, messgae: 'question is deleted successfully'});
 }
 
 

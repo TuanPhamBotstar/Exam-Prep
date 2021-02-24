@@ -11,6 +11,7 @@ let ResultSchema = new Schema({
     time: Number,
     chosenAnswers: Array,
     correctAnswer: Array,
+    date: Date,
 })
 
 module.exports = mongoose.model('Result', ResultSchema);
