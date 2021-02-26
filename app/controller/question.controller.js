@@ -144,7 +144,7 @@ module.exports.delQuestion = (req, res) =>{
         if(err) console.log(err);
         console.log(result);
     })
-    res.status(200).send({success: true, messgae: 'question is deleted successfully'});
+    res.status(200).send({success: true, id: id});
 }
 
 
