@@ -38,10 +38,11 @@ module.exports.putTypecode = (req, res) => {
     res.status(200).send({success:true});
 }
 module.exports.getDetailTest = (req, res) => {
+    const author = req.params.author;
     const subject_id = req.params.subject_id;
     const test_id = req.params.test_id;
     console.log('get test by test_id', req.params)
-    Test.findOne({_id: test_id, subject_id: subject_id}, (err, test) => {
+    Test.findOne({_id: test_id, subject_id: subject_id, author: author}, (err, test) => {
         if (err) console.log(err);
         if(test){
             res.status(200).send(test);
@@ -69,11 +70,25 @@ module.exports.getTesting = (req, res) => {
 }
 
 module.exports.getTestsBySubject_id = (req, res) =>{
+    const author = req.params.author;
     const id = req.params.subject_id;
     console.log('get test by subject_id', req.params)
-    Test.find({subject_id:id}, (err, tests) =>{
+    Test.find({author: author, subject_id:id}, (err, tests) =>{
         if(err) console.log(err);
         res.status(200).send((tests))
+    })
+}
+
+module.exports.getTestsByName = (req, res) => {
+    const author = req.params.author;
+    const subject_id = req.params.subject_id;
+    const testTitle = req.params.testTitle;
+    console.log('get tests by name test', req.params)
+    Test.aggregate([
+        { $match: { author: author, subject_id: subject_id, testTitle: { $regex: ".*" + testTitle + ".*"}}}
+    ]).exec((err, tests) => {
+        if(err) console.log(err)
+        res.status(200).json(tests);
     })
 }
 

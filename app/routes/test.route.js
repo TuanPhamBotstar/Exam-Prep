@@ -3,9 +3,10 @@ const router = express.Router();
 
 const testContoller = require('../controller/test.controller');
 
-router.get('/detail/:subject_id/:test_id', testContoller.getDetailTest);
+router.get('/detail/:author/:subject_id/:test_id', testContoller.getDetailTest);
+router.get('/search/:author/:subject_id/:testTitle', testContoller.getTestsByName);
 router.get('/testing/:id', testContoller.getTesting);
-router.get('/subject/:subject_id', testContoller.getTestsBySubject_id);
+router.get('/subject/:author/:subject_id', testContoller.getTestsBySubject_id);
 router.post('/', testContoller.postTest);
 router.post('/check', testContoller.checkAnswers);
 router.put('/', testContoller.putTypecode)

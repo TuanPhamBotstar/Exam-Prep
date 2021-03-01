@@ -24,6 +24,7 @@ const userRoutes = require("./app/routes/user.route");
 const questionRoutes = require("./app/routes/question.route");
 const testRoutes = require("./app/routes/test.route");
 const resultRoutes = require("./app/routes/result.route");
+const { db } = require("./app/models/test.model");
 mongoose.connect(url, {useNewUrlParser:true,useUnifiedTopology:true});
 
 mongoose.connection

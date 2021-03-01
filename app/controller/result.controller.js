@@ -108,19 +108,21 @@ module.exports.getResByAuthor = (req, res) => {
             console.log(results)
             if (results) {
                 const startDay = new Date(startDate).getDate();
-                const endDay = new Date(endDate).getDate();
+                // const endDay = new Date(endDate).getDate();
+                const endDay = new Date(startDate).getDate() + new Date(startDate).getMonth()
                 dateArr = [];
                 dayArr = [];
                 userArr = [];
-                for (let i = endDay-startDay; i >= 0; i--) {
+                for (let i = endDay - startDay; i >= 0; i--) {
                     userArr.push(0);
                     dayArr.push(new Date(endDate - i * 24 * 60 * 60 * 1000).getDate())
+                    // show day/month
                     dateArr.push(`${new Date(endDate - i * 24 * 60 * 60 * 1000).getDate()}/${new Date(endDate - i * 24 * 60 * 60 * 1000).getMonth() + 1}`);
-                  }
+                }
                 results.forEach(result => {
-                    if(dayArr.includes(new Date(result.date).getDate())){
+                    if (dayArr.includes(new Date(result.date).getDate())) {
                         userArr[dayArr.indexOf(new Date(result.date).getDate())]++;
-                      }
+                    }
                 })
                 res.status(200).json({ results: results, dateArr: dateArr, userArr: userArr });
             }
@@ -133,10 +135,20 @@ module.exports.getResByAuthor = (req, res) => {
 module.exports.getResByTest = (req, res) => {
     const test_id = req.params.test_id;
     const time = req.params.time;
+    const author = req.params.author;
     console.log('get result by test', req.params)
     var dateArr;
     var dayArr;
     var userArr;
+    var correctQty = [];
+    var inCorrectQty = [];
+    const chosensArr = [];
+    const rangePoint = [85, 70, 55, 40, 0];
+    var avgScore =0;
+    const evaluate = 
+        { weak: 0, belowAverage: 0 , average: 0 , good: 0 ,  excellent: 0 };
+    const scores = [];
+    const qtyScores =[];
     const startDate = getTime(time).startDate;
     const endDate = getTime(time).endDate;
     console.log('startDate', startDate)
@@ -144,7 +156,8 @@ module.exports.getResByTest = (req, res) => {
     Result.aggregate([
         {
             $match:
-            {
+            {   
+                author: author,
                 test_id: test_id,
                 date: {
                     $gte: new Date(startDate),
@@ -162,6 +175,9 @@ module.exports.getResByTest = (req, res) => {
                 time: 1,
                 date: 1,
                 user_id: 1,
+                chosenAnswers: 1,
+                correctAnswer: 1,
+                // "evaluate": { $range: [ 0, "$point", 10 ] }
             }
         },
     ])
@@ -169,22 +185,81 @@ module.exports.getResByTest = (req, res) => {
             if (err) console.log(err)
             console.log(results)
             if (results) {
-                const startDay = new Date(startDate).getDate();
-                const endDay = new Date(endDate).getDate();
+                const startDay = new Date(startDate);
+                const endDay = new Date(endDate);
+                const diff = Math.floor((Date.parse(endDay) - Date.parse(startDay))/86400000);
+                console.log('diff', diff)
                 dateArr = [];
                 dayArr = [];
                 userArr = [];
-                for (let i = endDay-startDay; i >= 0; i--) {
+                for (let i = diff; i >= 0; i--) {
                     userArr.push(0);
                     dayArr.push(new Date(endDate - i * 24 * 60 * 60 * 1000).getDate())
                     dateArr.push(`${new Date(endDate - i * 24 * 60 * 60 * 1000).getDate()}/${new Date(endDate - i * 24 * 60 * 60 * 1000).getMonth() + 1}`);
-                  }
-                results.forEach(result => {
-                    if(dayArr.includes(new Date(result.date).getDate())){
+                }
+                console.log(userArr, dateArr)
+                // correctAnswer = results[0].correctAnswer;
+                results.forEach((result,idx) => {
+                    if(idx === 0){
+                        correctAnswer = result.correctAnswer
+                    }
+                    chosensArr.push(result.chosenAnswers);
+                    let score = result.point;
+                    if(scores.includes(score)){
+                        qtyScores[scores.indexOf(score)]++;
+                    }
+                    else{
+                        scores.push(score);
+                        qtyScores.push(1);
+                    }
+                    avgScore += result.point;
+                    if (score >= 85) {
+                        evaluate.excellent++;
+                    }
+                    else if (score >= 70) {
+                        evaluate.good++;
+                    }
+                    else if(score >= 55) {
+                        evaluate.average++;
+                    }
+                    else if(score >= 40) {
+                        evaluate.belowAverage++;
+                    }
+                    else{
+                        evaluate.week++;
+                    }
+
+                    if (dayArr.includes(new Date(result.date).getDate())) {
                         userArr[dayArr.indexOf(new Date(result.date).getDate())]++;
-                      }
+                    }
                 })
-                res.status(200).json({ results: results, dateArr: dateArr, userArr: userArr });
+                // statics question
+                correctQty = Array(correctAnswer.length).fill(0)
+                for(let i =0; i< chosensArr.length; i++){
+                    for(let j =0; j< correctAnswer.length; j++){
+                        if(chosensArr[i][j] === correctAnswer[j]){
+                            correctQty[j]++;
+                        }
+                    }
+                }
+                for(let i = 0; i < correctQty.length; i++){
+                    inCorrectQty[i] = chosensArr.length - correctQty[i];
+                }
+                // console.log(inCorrectQty,correctQty)
+                avgScore = (avgScore/results.length).toFixed(2);
+                const userScore = {qtyScores: qtyScores ,scores: scores}
+                res.status(200).json({ results: results, 
+                    dateArr: dateArr, 
+                    userArr: userArr, 
+                    evaluate: evaluate, 
+                    avgScore: avgScore, 
+                    userScore: userScore,
+                    staticQuestions: {
+                        correctQty: correctQty,
+                        inCorrectQty: inCorrectQty,
+                        totalQs: correctAnswer.length,
+                    } 
+                });
             }
         });
 }
@@ -193,7 +268,7 @@ module.exports.getResBySubject = (req, res) => {
     const subject_id = req.params.subject_id;
     console.log('aggregate', req.params)
     Test.aggregate([
-        { $match: { subject_id: subject_id } },
+        { $match: { author: author, subject_id: subject_id } },
         {
             $project: {
                 _id: {

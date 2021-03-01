@@ -28,6 +28,21 @@ module.exports.getSubjects = (req, res) => {
     });
 };
 
+module.exports.getSubjectsByName = (req, res) => {
+    const author = req.params.author;
+    const subjectname = req.params.subjectname;
+    console.log('get subjects by name', req.params)
+    Subject.aggregate([
+        { $match: { author: author, subjectname: {$regex: ".*" + subjectname + ".*"}}}
+    ]).exec((err, subjects) => {
+        if(err) console.log(err)
+        res.status(200).json(subjects);
+    })
+    // Subject.find({author: author, subjectname: { $regex: /^/i}}, (err, subjects) => {
+    //     if(err) console.log(err)
+    //     res.status(200).json(subjects);
+    // })
+}
 module.exports.getSubjectName = (req, res) => {
     const findSubjectname = req.params.id;
     console.log('req.params', req.params)

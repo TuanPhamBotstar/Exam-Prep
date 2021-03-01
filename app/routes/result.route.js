@@ -7,5 +7,5 @@ router.post('/', controller.saveResult)
 router.get('/:id/:time', controller.getResult)
 router.get('/admin/:author/:time', controller.getResByAuthor)
 router.get('/dashboard/:author/:subject_id/', controller.getResBySubject)
-router.get('/test/:test_id/:time', controller.getResByTest)
+router.get('/test/:author/:test_id/:time', controller.getResByTest)
 module.exports = router;
