@@ -45,7 +45,7 @@ module.exports.getSubjectsByName = (req, res) => {
 }
 module.exports.getSubjectName = (req, res) => {
     const findSubjectname = req.params.id;
-    console.log('req.params', req.params)
+    console.log('get subject name', req.params)
     Subject.findOne({ _id: findSubjectname }, (err, subject) => {
         if (err) console.log(err);
         if (subject) {
@@ -71,6 +71,17 @@ module.exports.postSubject = (req, res) => {
     res.status(201).json(newSubject);
     // res.status(201).json({ subject_id: newSubject._id, success: true, message: 'Subject is created' });
 };
+
+module.exports.editSubjectName = (req, res) => {
+    const id =req.params.id;
+    const subjectname = req.body.subjectname;
+    console.log('edit name subjet', req.body)
+    const subject = Subject.where({_id: id});
+    if(subject.subjectname !== subjectname){
+        subject.updateOne({ $set: { subjectname: subjectname}}).exec();
+    }
+    res.status(200).send(req.body);
+}
 
 module.exports.delSubject = (req, res) => {
     const id = req.params.id;

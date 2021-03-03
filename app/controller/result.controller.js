@@ -38,7 +38,7 @@ function getTime(time) {
         startDate = new Date(currentDate.setHours(0, 0, 0, 0) - (today - 1) * 24 * 60 * 60 * 1000);
         endDate = currentDate.setHours(23, 59, 59, 999);
     }
-    else {
+    else if (time === 'all'){
         startDate = new Date('2021-02-01T09:58:51.694Z').setHours(0, 0, 0, 0);
         endDate = currentDate.setHours(23, 59, 59, 999);
     }
@@ -49,22 +49,67 @@ module.exports.getResult = (req, res) => { // get results by user
     const time = req.params.time;
     const currentDate = new Date(Date.now());
     // const endDate = new Date(Date.now() - 7* 24 * 60 * 60 * 1000);
-    // var startDate, endDate;
     const startDate = getTime(time).startDate;
     const endDate = getTime(time).endDate;
-
+    var dateArr;
+    var userArr;
     console.log('get result', req.params)
     console.log('startDate', startDate);
-    Result.find({
-        user_id: user_id,
-        date: {
-            $gt: new Date(startDate),
-            $lt: new Date(endDate)
+    Result.aggregate([
+        {
+            $match: 
+                {
+                    user_id: user_id,
+                    date: {
+                        $gt: new Date(startDate),
+                        $lt: new Date(endDate)
+                    },
+                }
+        },
+        {
+            $project: {
+                chosenAnswers: 1,
+                date: 1,
+                nameTest: 1,
+                point: 1,
+                time: 1,
+                user_name: 1,
+                test_id: 1,
+            }
         }
-    }, (err, results) => {
+    ]).exec((err, results) => {
         if (err) console.log(err)
-        res.status(200).json({ results: results, startDate: startDate, endDate: endDate });
+        if(results){
+            const startDay = new Date(startDate);
+            const endDay = new Date(endDate);
+            const diff = Math.floor((Date.parse(endDay) - Date.parse(startDay))/86400000);
+            console.log('diff', diff)
+            dateArr = [];
+            userArr = [];
+            for (let i = diff; i >= 0; i--) {
+                userArr.push(0);
+                dateArr.push(`${new Date(endDate - i * 24 * 60 * 60 * 1000).getDate()}/${new Date(endDate - i * 24 * 60 * 60 * 1000).getMonth() + 1}`);
+            }
+            results.forEach(result => {
+                const tempDay = `${new Date(result.date).getDate()}/${new Date(result.date).getMonth() + 1}`;
+                if (dateArr.includes(tempDay)) {
+                    userArr[dateArr.indexOf(tempDay)]++;
+                }
+            })
+        }
+
+        res.status(200).json({ results: results, dateArr: dateArr, userArr: userArr, startDate: startDate, endDate: endDate });
     })
+    // Result.find({
+    //     user_id: user_id,
+    //     date: {
+    //         $gt: new Date(startDate),
+    //         $lt: new Date(endDate)
+    //     }
+    // }, (err, results) => {
+    //     if (err) console.log(err)
+    //     res.status(200).json({ results: results, startDate: startDate, endDate: endDate });
+    // })
 
 }
 
@@ -107,21 +152,23 @@ module.exports.getResByAuthor = (req, res) => {
             if (err) console.log(err)
             console.log(results)
             if (results) {
-                const startDay = new Date(startDate).getDate();
-                // const endDay = new Date(endDate).getDate();
-                const endDay = new Date(startDate).getDate() + new Date(startDate).getMonth()
+                const startDay = new Date(startDate);
+                const endDay = new Date(endDate);
+                const diff = Math.floor((Date.parse(endDay) - Date.parse(startDay))/86400000);
                 dateArr = [];
                 dayArr = [];
                 userArr = [];
-                for (let i = endDay - startDay; i >= 0; i--) {
+                for (let i = diff; i >= 0; i--) {
                     userArr.push(0);
                     dayArr.push(new Date(endDate - i * 24 * 60 * 60 * 1000).getDate())
                     // show day/month
                     dateArr.push(`${new Date(endDate - i * 24 * 60 * 60 * 1000).getDate()}/${new Date(endDate - i * 24 * 60 * 60 * 1000).getMonth() + 1}`);
                 }
                 results.forEach(result => {
-                    if (dayArr.includes(new Date(result.date).getDate())) {
-                        userArr[dayArr.indexOf(new Date(result.date).getDate())]++;
+                    // new Date(result.date).getDate()
+                    const tempDay = `${new Date(result.date).getDate()}/${new Date(result.date).getMonth() + 1}`;
+                    if (dateArr.includes(tempDay)) {
+                        userArr[dateArr.indexOf(tempDay)]++;
                     }
                 })
                 res.status(200).json({ results: results, dateArr: dateArr, userArr: userArr });
@@ -228,10 +275,13 @@ module.exports.getResByTest = (req, res) => {
                     else{
                         evaluate.week++;
                     }
-
-                    if (dayArr.includes(new Date(result.date).getDate())) {
-                        userArr[dayArr.indexOf(new Date(result.date).getDate())]++;
+                    const tempDay = `${new Date(result.date).getDate()}/${new Date(result.date).getMonth() + 1}`;
+                    if (dateArr.includes(tempDay)) {
+                        userArr[dateArr.indexOf(tempDay)]++;
                     }
+                    // if (dayArr.includes(new Date(result.date).getDate())) {
+                    //     userArr[dayArr.indexOf(new Date(result.date).getDate())]++;
+                    // }
                 })
                 // statics question
                 correctQty = Array(correctAnswer.length).fill(0)
@@ -247,7 +297,8 @@ module.exports.getResByTest = (req, res) => {
                 }
                 // console.log(inCorrectQty,correctQty)
                 avgScore = (avgScore/results.length).toFixed(2);
-                const userScore = {qtyScores: qtyScores ,scores: scores}
+                console.log(avgScore)
+                const userScore = {qtyScores: qtyScores.reverse() ,scores: scores.reverse()}
                 res.status(200).json({ results: results, 
                     dateArr: dateArr, 
                     userArr: userArr, 
