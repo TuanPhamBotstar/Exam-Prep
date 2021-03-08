@@ -230,8 +230,8 @@ module.exports.getResByTest = (req, res) => {
     ])
         .exec((err, results) => {
             if (err) console.log(err)
-            console.log(results)
-            if (results) {
+            console.log('results: ',results)
+            if (results.length > 0) {
                 const startDay = new Date(startDate);
                 const endDay = new Date(endDate);
                 const diff = Math.floor((Date.parse(endDay) - Date.parse(startDay))/86400000);
@@ -245,7 +245,6 @@ module.exports.getResByTest = (req, res) => {
                     dateArr.push(`${new Date(endDate - i * 24 * 60 * 60 * 1000).getDate()}/${new Date(endDate - i * 24 * 60 * 60 * 1000).getMonth() + 1}`);
                 }
                 console.log(userArr, dateArr)
-                // correctAnswer = results[0].correctAnswer;
                 results.forEach((result,idx) => {
                     if(idx === 0){
                         correctAnswer = result.correctAnswer
@@ -272,8 +271,8 @@ module.exports.getResByTest = (req, res) => {
                     else if(score >= 40) {
                         evaluate.belowAverage++;
                     }
-                    else{
-                        evaluate.week++;
+                    else if(score < 40){
+                        evaluate.weak++;
                     }
                     const tempDay = `${new Date(result.date).getDate()}/${new Date(result.date).getMonth() + 1}`;
                     if (dateArr.includes(tempDay)) {
@@ -311,6 +310,19 @@ module.exports.getResByTest = (req, res) => {
                         totalQs: correctAnswer.length,
                     } 
                 });
+            }
+            else{
+                res.status(200).json(
+                    {   results: results,
+                        evaluate: [],
+                        avgScore: [],
+                        userScore: {qtyScores: [] ,scores: []},
+                        staticQuestions: {
+                            correctQty: [],inCorrectQty: [], totalQs:0
+                        },
+                        userArr: [],
+                        dateArr: [endDate],
+                    })
             }
         });
 }
