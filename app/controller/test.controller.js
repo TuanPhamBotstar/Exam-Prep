@@ -1,5 +1,5 @@
 const { json } = require('body-parser');
-const { findOne } = require('../models/test.model');
+const { findOne, modelName } = require('../models/test.model');
 const Test = require('../models/test.model');
 const { connect } = require('../routes/test.route');
 
@@ -52,6 +52,41 @@ module.exports.getDetailTest = (req, res) => {
         }
     })
 }
+//getCode
+module.exports.getTypeCode = (req, res) => {
+    const id = req.params.id;
+    console.log('get code after do test', req.params)
+    Test.findOne({_id: id}, (err, test) => {
+        if(err) console.log(err)
+        if(test){
+            res.status(200).json({typeCode: test.typeCode})
+        }
+    })
+}
+
+module.exports.checkCode = (req, res) => {
+    const typedCode = req.params.typedCode;
+    const id = req.params.id;
+    console.log('check typed code', req.params)
+    Test.findOne({_id: id}, (err, test) => {
+        if(err) console.log(err)
+        if(test.testCode == typedCode){
+            var timeTest = test.timeTest * 60;
+            res.status(200).json({match: true})
+            console.log('time test is ', timeTest)
+            var testing = setInterval(() => {
+                timeTest--;
+                if(timeTest === 0){
+                    console.log('over time')
+                }
+            }, 1000)
+        }
+        else{
+            res.status(200).json({match: false})
+        }
+    })
+}
+
 //hide answer'isCorrect
 module.exports.getTesting = (req, res) => {
     const id = req.params.id;

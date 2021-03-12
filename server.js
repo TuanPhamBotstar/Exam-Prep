@@ -8,8 +8,9 @@ const mongoose = require("mongoose");
 
 mongoose.set("useFindAndModify", false);
 
-const url = "mongodb://localhost:27017/examprep";
-
+// const url = "mongodb://localhost:27017/examprep";
+// const url = "mongodb://database/examprep";
+const url = "mongodb://mongo:27017/examprep";
 app.use(bodyParser.json());
 app.use(
     bodyParser.urlencoded({

@@ -352,7 +352,7 @@ module.exports.getResBySubject = (req, res) => {
         {
             $project: {
                 _nameTest: "$testTitle",
-                score: "$results.point",
+                score: "$results.point",            
             }
         },
         {
@@ -364,7 +364,7 @@ module.exports.getResBySubject = (req, res) => {
             $project: {
                 _id: "$_nameTest",
                 totalUsers: 1,
-                avgScore: { $avg: "$score" }
+                avgScore: { $avg: "$score" },
             }
         },
         {
